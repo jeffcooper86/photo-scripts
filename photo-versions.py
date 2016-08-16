@@ -56,13 +56,22 @@ def resize_image(image, size):
     return image.resize(size, Image.ANTIALIAS)
 
 def save_bordered_image(image, print_size):
+    size_string = "x".join(str(i) for i in print_size)
     print_size = get_print_size_in_pixels(print_size)
-    make_print_with_border(image, print_size).save('dist/bordered_image.jpg')
+    make_print_with_border(image, print_size).save(
+        'dist/bordered-print-' + size_string + '.jpg')
+
+    # Log status to console
+    print "Saved " + size_string + " print"
 
 def save_small_image(image, small_size):
     if get_orientation(image) == 'landscape':
         small_size = tuple(reversed(small_size))
     resize_image(original_image, small_size).save('dist/small.jpg')
+
+def save_print_sizes(print_sizes):
+    for size in print_sizes:
+        save_bordered_image(original_image, size)
 
 # Get the image.
 original_image = Image.open('sample/IMG_8962 (2).jpg')
@@ -71,4 +80,4 @@ original_image = Image.open('sample/IMG_8962 (2).jpg')
 save_small_image(original_image, small_size)
 
 # Save bordered images for prints.
-save_bordered_image(original_image, print_sizes[1])
+save_print_sizes(print_sizes)
