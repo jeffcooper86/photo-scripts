@@ -1,2 +1,2 @@
 # Photo Scripts
-Creates photo files for printing and previews
+Creates photo files from photography collection for printing and previews
