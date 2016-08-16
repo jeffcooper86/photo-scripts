@@ -13,7 +13,8 @@ print_sizes = [
 small_size = (667, 1000)
 image_path = os.path.expanduser('~') \
     + '/Documents/development/photo-scripts/sample/'
-prints_path = os.path.expanduser('~') + '/Pictures/Prints'
+print_name = '_'.join(image_path.strip('/').split('/')[-3:])
+prints_path = os.path.expanduser('~') + '/Pictures/Prints/'
 
 #*** Helper functions.
 def get_image_size_with_border(print_size, border_ratio):
@@ -58,21 +59,21 @@ def make_print_with_border(image, print_size):
     )
 
     # Make a new image and paste the resized image in it.
-    bordered_image = Image.new("RGB", print_size, border_color)
+    bordered_image = Image.new('RGB', print_size, border_color)
     bordered_image.paste(resized_image, image_offset_for_border)
     return bordered_image
 
 def resize_image(image, size):
     return image.resize(size, Image.ANTIALIAS)
 
-def save_bordered_image(image, print_size, prints_path):
-    size_string = "x".join(str(i) for i in print_size)
+def save_bordered_image(image, print_size, prints_path, print_name):
+    size_string = 'x'.join(str(i) for i in print_size)
+    full_name = print_name + '_' + size_string + '.jpg'
     print_size = get_print_size_in_pixels(print_size)
-    make_print_with_border(image, print_size).save(
-        prints_path + '/bordered-print-' + size_string + '.jpg')
+    make_print_with_border(image, print_size).save(prints_path + full_name)
 
     # Log status.
-    print "Saved " + size_string + " print"
+    print 'Saved ' + full_name
 
 def save_small_image(image, small_size, image_path):
     if get_orientation(image) == 'landscape':
@@ -80,20 +81,20 @@ def save_small_image(image, small_size, image_path):
     resize_image(original_image, small_size).save(image_path + '/small.jpg')
 
     # Log status.
-    print "Saved small copy to " + image_path
+    print 'Saved small copy to ' + image_path
 
-def save_print_sizes(print_sizes, image, prints_path):
+def save_print_sizes(print_sizes, image, prints_path, print_name):
     if not os.path.exists(prints_path):
 
         # Log status.
-        print "Making directory at " + prints_path
+        print 'Making directory at ' + prints_path
         os.makedirs(prints_path)
 
     # Log status.
-    print "Saving print sizes to " + prints_path
+    print '\nSaving print sizes to ' + prints_path
 
     for size in print_sizes:
-        save_bordered_image(image, size, prints_path)
+        save_bordered_image(image, size, prints_path, print_name)
 
 
 #*** Make the photo versions.
@@ -104,4 +105,4 @@ original_image = Image.open(getSourceImage(image_path))
 save_small_image(original_image, small_size, image_path)
 
 # Save bordered images for prints.
-save_print_sizes(print_sizes, original_image, prints_path)
+save_print_sizes(print_sizes, original_image, prints_path, print_name)
