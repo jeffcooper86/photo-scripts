@@ -32,13 +32,13 @@ def get_orientation(image):
         return 'landscape'
     return 'portrait'
 
-def get_print_size_in_pixels(ratio_in_inches):
+def get_print_size_in_pixels(ratio_in_inches, orientation):
 
     # 300 dpi.
     print_size = tuple(300 * x for x in ratio_in_inches)
 
     # Match the print orientation to the image. Square defaults to portrait.
-    if get_orientation(original_image) == 'landscape':
+    if orientation == 'landscape':
         print_size = tuple(reversed(print_size))
     return print_size
 
@@ -80,7 +80,7 @@ def resize_image(image, size):
 def save_bordered_image(image, print_size, prints_path, print_name):
     size_string = 'x'.join(str(i) for i in print_size)
     full_name = print_name + '_' + size_string + '.jpg'
-    print_size = get_print_size_in_pixels(print_size)
+    print_size = get_print_size_in_pixels(print_size, get_orientation(image))
     make_print_with_border(image, print_size).save(prints_path + full_name)
 
     # Log status.
@@ -89,7 +89,7 @@ def save_bordered_image(image, print_size, prints_path, print_name):
 def save_small_image(image, small_size, image_path):
     if get_orientation(image) == 'landscape':
         small_size = tuple(reversed(small_size))
-    resize_image(original_image, small_size).save(image_path + '/small.jpg')
+    resize_image(image, small_size).save(image_path + '/small.jpg')
 
     # Log status.
     print 'Saved small copy to ' + image_path
@@ -108,5 +108,5 @@ def save_print_sizes(print_sizes, image, prints_path, print_name):
         save_bordered_image(image, size, prints_path, print_name)
 
 
-#*** Make the photo versions.
+#*** Make the photos.
 make_photo_versions(image_path)
