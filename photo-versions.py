@@ -48,6 +48,17 @@ def getSourceImage(image_path):
     return image_path + [f for f in os.listdir(image_path) \
         if re.match(r'IMG_[0-9]+.*\.jpg', f)][0]
 
+def make_photo_versions(image_path):
+
+    # Get the source image.
+    original_image = Image.open(getSourceImage(image_path))
+
+    # Save a small version for previews.
+    save_small_image(original_image, small_size, image_path)
+
+    # Save bordered images for prints.
+    save_print_sizes(print_sizes, original_image, prints_path, print_name)
+
 def make_print_with_border(image, print_size):
     border_color = (255, 255, 255)
     border_ratio = 0.25
@@ -98,11 +109,4 @@ def save_print_sizes(print_sizes, image, prints_path, print_name):
 
 
 #*** Make the photo versions.
-# Get the source image.
-original_image = Image.open(getSourceImage(image_path))
-
-# Save a small version for previews.
-save_small_image(original_image, small_size, image_path)
-
-# Save bordered images for prints.
-save_print_sizes(print_sizes, original_image, prints_path, print_name)
+make_photo_versions(image_path)
