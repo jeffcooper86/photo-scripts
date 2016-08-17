@@ -41,7 +41,11 @@ def make_photo_versions(image_path):
         .replace(' ', '-')
 
     # Get the source image.
-    original_image = Image.open(getSourceImage(image_path))
+    try:
+        original_image = Image.open(getSourceImage(image_path))
+    except:
+        print 'No image found for ' + image_path
+        continue
 
     # Save a small version for previews.
     save_small_image(original_image, small_size, image_path)
