@@ -8,7 +8,7 @@ def get_image_size_with_border(print_size, border_ratio, orientation):
     # Preserve 2:3 aspect ratio
     long_side = max(print_size[0], print_size[1]) * (1 - border_ratio)
     short_side = 2.0 / 3 * long_side
-    image_size = int(long_side), int(short_side))
+    image_size = tuple(int(long_side), int(short_side))
     if orientation == 'portrait':
         return tuple(reversed(image_size))
     return image_size
@@ -37,22 +37,23 @@ def getSourceImage(image_path):
     return image_path + '/' + [f for f in os.listdir(image_path) \
         if re.match(r'IMG_[0-9]+.*\.jpg', f)][0]
 
-def make_photo_versions(image_path):
+def make_photo_versions(image_path, scope_from):
 
     # Make the scoped name for the photo print files.
-    print_name = '_'.join(image_path.strip('/').split('/')[-3:]) \
-        .replace(' ', '-')
+    print_name = '_'.join(
+        image_path[image_path.find(scope_from) + len(scope_from) + 1:]
+        .replace(' ', '-').strip('/').split('/')[1:]
+    )
 
-    # Get the source image.
     try:
+        # Get the source image.
         original_image = Image.open(getSourceImage(image_path))
-    except:
-        print 'No image found for ' + image_path
-        continue
 
-    # Save versions.
-    save_small_image(original_image, small_size, image_path)
-    save_print_sizes(print_sizes, original_image, prints_path, print_name)
+        # Save versions.
+        save_small_image(original_image, small_size, image_path)
+        save_print_sizes(print_sizes, original_image, prints_path, print_name)
+    except:
+        print 'ERROR: No image found for ' + image_path
 
 def make_print_with_border(image, size):
     border_color = (255, 255, 255)
@@ -116,6 +117,7 @@ print_sizes = [
     (20, 30)]
 small_size = (667, 1000)
 photos_path = os.path.expanduser('~') + '/Dropbox/Photography/'
+photo_naming_start_after = 'Photography'
 directories_to_print = ['_random', '_studio', 'location']
 prints_path = os.path.expanduser('~') + '/Pictures/Prints/'
 
@@ -133,4 +135,4 @@ for to_print_d in directories_to_print:
 
             # Log status.
             print '\nMaking photo versions for ' + root
-            make_photo_versions(root)
+            make_photo_versions(root, photo_naming_start_after)
