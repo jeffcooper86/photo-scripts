@@ -2,20 +2,6 @@ import os
 import re
 from PIL import Image
 
-#*** Settings.
-print_sizes = [
-    (5, 7),
-    (8, 10),
-    (10, 12),
-    (11, 14),
-    (16, 20),
-    (20, 30)]
-small_size = (667, 1000)
-image_path = os.path.expanduser('~') \
-    + '/Documents/development/photo-scripts/sample/'
-print_name = '_'.join(image_path.strip('/').split('/')[-3:])
-prints_path = os.path.expanduser('~') + '/Pictures/Prints/'
-
 #*** Helper functions.
 def get_image_size_with_border(print_size, border_ratio):
 
@@ -98,7 +84,7 @@ def save_print_sizes(print_sizes, image, prints_path, print_name):
     if not os.path.exists(prints_path):
 
         # Log status.
-        print 'Making directory at ' + prints_path
+        print '\nMaking directory at ' + prints_path
         os.makedirs(prints_path)
 
     # Log status.
@@ -108,5 +94,37 @@ def save_print_sizes(print_sizes, image, prints_path, print_name):
         save_bordered_image(image, size, prints_path, print_name)
 
 
+#*** Settings.
+print_sizes = [
+    (5, 7),
+    (8, 10),
+    (10, 12),
+    (11, 14),
+    (16, 20),
+    (20, 30)]
+small_size = (667, 1000)
+image_path = os.path.expanduser('~') \
+    + '/Documents/development/photo-scripts/sample/'
+print_name = '_'.join(image_path.strip('/').split('/')[-3:])
+prints_path = os.path.expanduser('~') + '/Pictures/Prints/'
+
+
 #*** Make the photos.
-make_photo_versions(image_path)
+# Parse photos directory and make versions for each photo
+directories_to_print = ['_random', '_studio', 'location']
+photos_path = os.path.expanduser('~') + '/Dropbox/Photography/'
+
+# Loop each directory containing photos to print
+for to_print_d in directories_to_print:
+    path = photos_path + to_print_d
+
+    # Log status.
+    print '\nParsing ' + path
+
+    # Find all directories
+    for root, dirs, files in os.walk(photos_path + to_print_d):
+
+        # If there are no subdirectories, format the photos
+        if not len(dirs):
+            print '\nMaking photo versions for ' + root
+            make_photo_versions(root)
