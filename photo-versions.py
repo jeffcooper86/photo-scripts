@@ -31,10 +31,14 @@ def get_print_size_in_pixels(ratio_in_inches, orientation):
 def getSourceImage(image_path):
 
     # Get the original jpg filename from the directory.
-    return image_path + [f for f in os.listdir(image_path) \
+    return image_path + '/' + [f for f in os.listdir(image_path) \
         if re.match(r'IMG_[0-9]+.*\.jpg', f)][0]
 
 def make_photo_versions(image_path):
+
+    # Make the scoped name for the photo print files.
+    print_name = '_'.join(image_path.strip('/').split('/')[-3:]) \
+        .replace(' ', '-')
 
     # Get the source image.
     original_image = Image.open(getSourceImage(image_path))
@@ -103,28 +107,29 @@ print_sizes = [
     (16, 20),
     (20, 30)]
 small_size = (667, 1000)
+
 image_path = os.path.expanduser('~') \
     + '/Documents/development/photo-scripts/sample/'
-print_name = '_'.join(image_path.strip('/').split('/')[-3:])
+
 prints_path = os.path.expanduser('~') + '/Pictures/Prints/'
-
-
-#*** Make the photos.
-# Parse photos directory and make versions for each photo
 directories_to_print = ['_random', '_studio', 'location']
 photos_path = os.path.expanduser('~') + '/Dropbox/Photography/'
 
-# Loop each directory containing photos to print
+
+#*** Parse photos directory and make versions for each photo.
+# Loop each directory containing photos to print.
 for to_print_d in directories_to_print:
     path = photos_path + to_print_d
 
     # Log status.
     print '\nParsing ' + path
 
-    # Find all directories
+    # Find all directories.
     for root, dirs, files in os.walk(photos_path + to_print_d):
 
-        # If there are no subdirectories, format the photos
+        # If there are no subdirectories, format the photos.
         if not len(dirs):
+
+            # Log status.
             print '\nMaking photo versions for ' + root
             make_photo_versions(root)
