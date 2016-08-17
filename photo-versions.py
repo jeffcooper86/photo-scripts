@@ -117,7 +117,7 @@ print_sizes = [
     (20, 30)]
 small_size = (667, 1000)
 photos_path = os.path.expanduser('~') + '/Dropbox/Photography/'
-photo_naming_start_after = 'Photography'
+photo_name_after = 'Photography'
 directories_to_print = ['_random', '_studio', 'location']
 prints_path = os.path.expanduser('~') + '/Pictures/Prints/'
 
@@ -135,4 +135,4 @@ for to_print_d in directories_to_print:
 
             # Log status.
             print '\nMaking photo versions for ' + root
-            make_photo_versions(root, photo_naming_start_after)
+            make_photo_versions(root, photo_name_after)
