@@ -115,14 +115,9 @@ print_sizes = [
     (16, 20),
     (20, 30)]
 small_size = (667, 1000)
-
-image_path = os.path.expanduser('~') \
-    + '/Documents/development/photo-scripts/sample/'
-
-prints_path = os.path.expanduser('~') + '/Pictures/Prints/'
-directories_to_print = ['_random', '_studio', 'location']
 photos_path = os.path.expanduser('~') + '/Dropbox/Photography/'
-
+directories_to_print = ['_random', '_studio', 'location']
+prints_path = os.path.expanduser('~') + '/Pictures/Prints/'
 
 #*** Parse photos directory and make versions for each photo.
 # Loop each directory containing photos to print.
@@ -131,11 +126,9 @@ for to_print_d in directories_to_print:
 
     # Log status.
     print '\nParsing ' + path
-
-    # Find all directories.
     for root, dirs, files in os.walk(photos_path + to_print_d):
 
-        # If there are no subdirectories, format the photos.
+        # If there are no subdirectories format the photos in that directory.
         if not len(dirs):
 
             # Log status.
