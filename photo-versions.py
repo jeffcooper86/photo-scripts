@@ -3,12 +3,15 @@ import re
 from PIL import Image
 
 #*** Helper functions.
-def get_image_size_with_border(print_size, border_ratio):
+def get_image_size_with_border(print_size, border_ratio, orientation):
 
     # Preserve 2:3 aspect ratio
     long_side = max(print_size[0], print_size[1]) * (1 - border_ratio)
     short_side = 2.0 / 3 * long_side
-    return (int(long_side), int(short_side))
+    image_size = int(long_side), int(short_side))
+    if orientation == 'portrait':
+        return tuple(reversed(image_size))
+    return image_size
 
 def get_orientation(image):
     size = image.size
@@ -47,35 +50,36 @@ def make_photo_versions(image_path):
         print 'No image found for ' + image_path
         continue
 
-    # Save a small version for previews.
+    # Save versions.
     save_small_image(original_image, small_size, image_path)
-
-    # Save bordered images for prints.
     save_print_sizes(print_sizes, original_image, prints_path, print_name)
 
-def make_print_with_border(image, print_size):
+def make_print_with_border(image, size):
     border_color = (255, 255, 255)
     border_ratio = 0.25
-    bordered_image_size = get_image_size_with_border(print_size, border_ratio)
+    print_size = get_print_size_in_pixels(size, get_orientation(image))
+    bordered_image_size = get_image_size_with_border(
+        print_size, border_ratio, get_orientation(image))
+
+    # Resize the image.
     resized_image = resize_image(image, bordered_image_size)
+
+    # Make a new image and paste the resized image in it.
+    bordered_image = Image.new('RGB', print_size, border_color)
     image_offset_for_border = (
         (print_size[0] - bordered_image_size[0]) / 2,
         (print_size[1] - bordered_image_size[1]) / 2
     )
-
-    # Make a new image and paste the resized image in it.
-    bordered_image = Image.new('RGB', print_size, border_color)
     bordered_image.paste(resized_image, image_offset_for_border)
     return bordered_image
 
 def resize_image(image, size):
     return image.resize(size, Image.ANTIALIAS)
 
-def save_bordered_image(image, print_size, prints_path, print_name):
-    size_string = 'x'.join(str(i) for i in print_size)
+def save_bordered_image(image, size, prints_path, print_name):
+    size_string = 'x'.join(str(i) for i in size)
     full_name = print_name + '_' + size_string + '.jpg'
-    print_size = get_print_size_in_pixels(print_size, get_orientation(image))
-    make_print_with_border(image, print_size).save(prints_path + full_name)
+    make_print_with_border(image, size).save(prints_path + full_name)
 
     # Log status.
     print 'Saved ' + full_name
