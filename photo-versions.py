@@ -148,6 +148,6 @@ for to_print_d in directories_to_print:
             print '\nMaking photo versions for ' + root
             print_jobs.apply_async(
                 make_photo_versions, args=(root, photo_name_after)
-                )
+            )
     print_jobs.close()
     print_jobs.join()
