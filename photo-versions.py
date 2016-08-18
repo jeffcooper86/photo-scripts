@@ -1,6 +1,7 @@
 import os
 import re
 import multiprocessing
+import colors
 from PIL import Image
 
 #*** Helper functions.
@@ -74,7 +75,7 @@ def make_photo_versions(image_path, scope_from):
     try:
         original_image = Image.open(getSourceImage(image_path))
     except:
-        print 'ERROR: No image found for ' + image_path
+        print colors.red('ERROR: No image found for ' + image_path)
 
     # Save versions.
     if original_image:
