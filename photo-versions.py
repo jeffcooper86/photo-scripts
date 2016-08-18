@@ -13,7 +13,7 @@ def do_images():
         path = photos_path + to_print_d
 
         # Log status.
-        print '\nParsing ' + path
+        print 'Parsing ' + path
 
         # Run in parallel processes for each photo.
         print_jobs = multiprocessing.Pool()
@@ -23,7 +23,7 @@ def do_images():
             if not len(dirs):
 
                 # Log status.
-                print '\nMaking photo versions for %s' % root
+                print 'Making photo versions for %s' % root
                 print_jobs.apply_async(
                     make_photo_versions, args=(root, photo_name_after)
                 )
@@ -62,7 +62,12 @@ def getSourceImage(image_path):
 
     # Get the original jpg filename from the directory.
     return image_path + '/' + [f for f in os.listdir(image_path) \
-        if re.match(r'IMG_[0-9]+.*\.jpg', f)][0]
+
+        # Match files named like 'IMG_2234.jpg'.
+        if re.match(r'^IMG_[0-9]+.*\.jpg$', f) \
+
+        # Match files named like '2013-08-04 19.46.38.jpg'.
+        or re.match(r'^([0-9]+[\-\.\s]?)+\.jpg$', f)][0]
 
 def make_photo_versions(image_path, scope_from):
 
@@ -112,14 +117,14 @@ def save_bordered_image(image, size, prints_path, print_name):
     if not os.path.exists(size_path):
 
         # Log status.
-        print '\nMaking directory at ' + size_path
+        print 'Making directory at ' + size_path
         os.makedirs(size_path)
 
     full_name = print_name + '_' + size_string + '.jpg'
     make_print_with_border(image, size).save(size_path + full_name)
 
     # Log status.
-    print 'Saved ' + full_name
+    print colors.green('Saved ' + full_name)
 
 def save_small_image(image, small_size, image_path):
     if get_orientation(image) == 'landscape':
@@ -127,17 +132,17 @@ def save_small_image(image, small_size, image_path):
     resize_image(image, small_size).save(image_path + '/small.jpg')
 
     # Log status.
-    print 'Saved small copy to ' + image_path
+    print colors.green('Saved small copy to ' + image_path)
 
 def save_print_sizes(print_sizes, image, prints_path, print_name):
     if not os.path.exists(prints_path):
 
         # Log status.
-        print '\nMaking directory at ' + prints_path
+        print 'Making directory at ' + prints_path
         os.makedirs(prints_path)
 
     # Log status.
-    print '\nSaving print sizes for ' + print_name + ' to ' + prints_path
+    print 'Saving print sizes for ' + print_name + ' to ' + prints_path
     for size in print_sizes:
         save_bordered_image(image, size, prints_path, print_name)
 
@@ -153,10 +158,12 @@ small_size = (667, 1000)
 photos_path = os.path.expanduser('~') + '/Dropbox/Photography/'
 photo_name_after = 'Photography'
 directories_to_print = ['_random', '_studio', 'location']
+
+# Be careful changing this location as everything in it will be deleted.
 prints_path = os.path.expanduser('~') + '/Pictures/Prints/'
 
 # Pass currdir to only format photos within a directory instead of all of them.
-if sys.argv[1] and sys.argv[1] == 'currdir':
+if len(sys.argv) > 1 and sys.argv[1] == 'currdir':
     cwd = os.getcwd()
 
     # Still want to be within the photos directory.
@@ -164,8 +171,8 @@ if sys.argv[1] and sys.argv[1] == 'currdir':
         photos_path = cwd + '/'
         directories_to_print = [d for d in os.listdir('.') if os.path.isdir(d)]
 
+# Remove the old prints before saving the new ones.
 else:
-    # Remove the old prints before saving the new ones.
     shutil.rmtree(prints_path)
 
 #*** Parse photos directory and make versions for each photo.
