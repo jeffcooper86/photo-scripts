@@ -81,8 +81,15 @@ def resize_image(image, size):
 
 def save_bordered_image(image, size, prints_path, print_name):
     size_string = 'x'.join(str(i) for i in size)
+    size_path = prints_path + size_string
+    if not os.path.exists(size_path):
+
+        # Log status.
+        print '\nMaking directory at ' + size_path
+        os.makedirs(size_path)
+
     full_name = print_name + '_' + size_string + '.jpg'
-    make_print_with_border(image, size).save(prints_path + full_name)
+    make_print_with_border(image, size).save(size_path + full_name)
 
     # Log status.
     print 'Saved ' + full_name
