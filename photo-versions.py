@@ -2,11 +2,13 @@ import os
 import re
 import multiprocessing
 import colors
+import sys
+import shutil
 from PIL import Image
 
 #*** Helper functions.
 # Loop each directory containing photos to print.
-def do_all_images():
+def do_images():
     for to_print_d in directories_to_print:
         path = photos_path + to_print_d
 
@@ -21,7 +23,7 @@ def do_all_images():
             if not len(dirs):
 
                 # Log status.
-                print '\nMaking photo versions for ' + root
+                print '\nMaking photo versions for %s' % root
                 print_jobs.apply_async(
                     make_photo_versions, args=(root, photo_name_after)
                 )
@@ -75,7 +77,7 @@ def make_photo_versions(image_path, scope_from):
     try:
         original_image = Image.open(getSourceImage(image_path))
     except:
-        print colors.red('ERROR: No image found for ' + image_path)
+        print colors.red('ERROR: No image found for %s' % image_path)
 
     # Save versions.
     if original_image:
@@ -153,5 +155,18 @@ photo_name_after = 'Photography'
 directories_to_print = ['_random', '_studio', 'location']
 prints_path = os.path.expanduser('~') + '/Pictures/Prints/'
 
+# Pass currdir to only format photos within a directory instead of all of them.
+if sys.argv[1] and sys.argv[1] == 'currdir':
+    cwd = os.getcwd()
+
+    # Still want to be within the photos directory.
+    if cwd.find(photos_path) > -1:
+        photos_path = cwd + '/'
+        directories_to_print = [d for d in os.listdir('.') if os.path.isdir(d)]
+
+else:
+    # Remove the old prints before saving the new ones.
+    shutil.rmtree(prints_path)
+
 #*** Parse photos directory and make versions for each photo.
-do_all_images()
+do_images()
