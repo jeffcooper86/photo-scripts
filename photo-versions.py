@@ -4,6 +4,29 @@ import multiprocessing
 from PIL import Image
 
 #*** Helper functions.
+# Loop each directory containing photos to print.
+def do_all_images():
+    for to_print_d in directories_to_print:
+        path = photos_path + to_print_d
+
+        # Log status.
+        print '\nParsing ' + path
+
+        # Run in parallel processes for each photo.
+        print_jobs = multiprocessing.Pool()
+        for root, dirs, files in os.walk(photos_path + to_print_d):
+
+            # If there are no subdirectories format the photos in that directory.
+            if not len(dirs):
+
+                # Log status.
+                print '\nMaking photo versions for ' + root
+                print_jobs.apply_async(
+                    make_photo_versions, args=(root, photo_name_after)
+                )
+        print_jobs.close()
+        print_jobs.join()
+
 def get_image_size_with_border(print_size, border_ratio, orientation):
 
     # Preserve 2:3 aspect ratio
@@ -130,24 +153,4 @@ directories_to_print = ['_random', '_studio', 'location']
 prints_path = os.path.expanduser('~') + '/Pictures/Prints/'
 
 #*** Parse photos directory and make versions for each photo.
-# Loop each directory containing photos to print.
-for to_print_d in directories_to_print:
-    path = photos_path + to_print_d
-
-    # Log status.
-    print '\nParsing ' + path
-
-    # Run in parallel processes for each photo.
-    print_jobs = multiprocessing.Pool()
-    for root, dirs, files in os.walk(photos_path + to_print_d):
-
-        # If there are no subdirectories format the photos in that directory.
-        if not len(dirs):
-
-            # Log status.
-            print '\nMaking photo versions for ' + root
-            print_jobs.apply_async(
-                make_photo_versions, args=(root, photo_name_after)
-            )
-    print_jobs.close()
-    print_jobs.join()
+do_all_images()
