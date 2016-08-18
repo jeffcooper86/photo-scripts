@@ -81,7 +81,7 @@ def resize_image(image, size):
 
 def save_bordered_image(image, size, prints_path, print_name):
     size_string = 'x'.join(str(i) for i in size)
-    size_path = prints_path + size_string
+    size_path = prints_path + size_string + '/'
     if not os.path.exists(size_path):
 
         # Log status.
