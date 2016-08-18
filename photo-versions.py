@@ -8,7 +8,7 @@ def get_image_size_with_border(print_size, border_ratio, orientation):
     # Preserve 2:3 aspect ratio
     long_side = max(print_size[0], print_size[1]) * (1 - border_ratio)
     short_side = 2.0 / 3 * long_side
-    image_size = tuple(int(long_side), int(short_side))
+    image_size = tuple((int(long_side), int(short_side)))
     if orientation == 'portrait':
         return tuple(reversed(image_size))
     return image_size
@@ -45,15 +45,17 @@ def make_photo_versions(image_path, scope_from):
         .replace(' ', '-').strip('/').split('/')[1:]
     )
 
+    # Get the source image.
+    original_image = None
     try:
-        # Get the source image.
         original_image = Image.open(getSourceImage(image_path))
-
-        # Save versions.
-        save_small_image(original_image, small_size, image_path)
-        save_print_sizes(print_sizes, original_image, prints_path, print_name)
     except:
         print 'ERROR: No image found for ' + image_path
+
+    # Save versions.
+    if original_image:
+        save_small_image(original_image, small_size, image_path)
+        save_print_sizes(print_sizes, original_image, prints_path, print_name)
 
 def make_print_with_border(image, size):
     border_color = (255, 255, 255)
