@@ -1,5 +1,6 @@
 import os
 import re
+import multiprocessing
 from PIL import Image
 
 #*** Helper functions.
@@ -110,11 +111,9 @@ def save_print_sizes(print_sizes, image, prints_path, print_name):
         os.makedirs(prints_path)
 
     # Log status.
-    print '\nSaving print sizes to ' + prints_path
-
+    print '\nSaving print sizes for ' + print_name + ' to ' + prints_path
     for size in print_sizes:
         save_bordered_image(image, size, prints_path, print_name)
-
 
 #*** Settings.
 print_sizes = [
@@ -137,6 +136,9 @@ for to_print_d in directories_to_print:
 
     # Log status.
     print '\nParsing ' + path
+
+    # Run in parallel processes for each photo.
+    print_jobs = multiprocessing.Pool()
     for root, dirs, files in os.walk(photos_path + to_print_d):
 
         # If there are no subdirectories format the photos in that directory.
@@ -144,4 +146,8 @@ for to_print_d in directories_to_print:
 
             # Log status.
             print '\nMaking photo versions for ' + root
-            make_photo_versions(root, photo_name_after)
+            print_jobs.apply_async(
+                make_photo_versions, args=(root, photo_name_after)
+                )
+    print_jobs.close()
+    print_jobs.join()
