@@ -91,7 +91,7 @@ def make_photo_versions(image_path, scope_from):
 
 def make_print_with_border(image, size):
     border_color = (255, 255, 255)
-    border_ratio = 0.25
+    border_ratio = 0.2
     print_size = get_print_size_in_pixels(size, get_orientation(image))
     bordered_image_size = get_image_size_with_border(
         print_size, border_ratio, get_orientation(image))
@@ -148,12 +148,14 @@ def save_print_sizes(print_sizes, image, prints_path, print_name):
 
 #*** Settings.
 print_sizes = [
-    (5, 7),
-    (8, 10),
-    (10, 12),
-    (11, 14),
-    (16, 20),
-    (20, 30)]
+    (5, 7),         # 5:7
+    (8, 10),        # 4:5
+    (10, 12),       # 5:6
+    (11, 14),       # 11:14
+    (16, 20),       # 4:5
+    (20, 30),       # 2:3
+    (21, 28)        # 3:4
+]
 small_size = (667, 1000)
 photos_path = os.path.expanduser('~') + '/Dropbox/Photography/'
 photo_name_after = 'Photography'
