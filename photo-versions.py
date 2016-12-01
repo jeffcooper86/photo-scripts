@@ -149,8 +149,6 @@ def save_print_sizes(print_sizes, image, prints_path, print_name):
 #*** Settings.
 print_sizes = [
     (5, 7),         # 5:7
-    (8, 10),        # 4:5
-    (10, 12),       # 5:6
     (11, 14),       # 11:14
     (16, 20),       # 4:5
     (20, 30),       # 2:3
