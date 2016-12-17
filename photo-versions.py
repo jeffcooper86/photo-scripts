@@ -7,6 +7,15 @@ import shutil
 from PIL import Image
 
 #*** Helper functions.
+def calc_image_ratio(image):
+    size = [image.size[0], image.size[1]]
+    size.sort()
+    return float(size[0]) / size[1]
+
+
+def calc_small_size(image, longest):
+    return (int(1000 * calc_image_ratio(image)), 1000)
+
 # Loop each directory containing photos to print.
 def do_images():
     for to_print_d in directories_to_print:
@@ -64,10 +73,10 @@ def getSourceImage(image_path):
     return image_path + '/' + [f for f in os.listdir(image_path) \
 
         # Match files named like 'IMG_2234.jpg'.
-        if re.match(r'^IMG_[0-9]+.*\.jpg$', f) \
+        if re.match(r'^img_[0-9]+.*\.jpg$', f.lower()) \
 
         # Match files named like '2013-08-04 19.46.38.jpg'.
-        or re.match(r'^([0-9]+[\-\.\s]?)+\.jpg$', f)][0]
+        or re.match(r'^([0-9]+[\-\.\s]?)+\.jpg$', f.lower())][0]
 
 def make_photo_versions(image_path, scope_from):
 
@@ -126,10 +135,12 @@ def save_bordered_image(image, size, prints_path, print_name):
     # Log status.
     print colors.green('Saved ' + full_name)
 
+
 def save_small_image(image, small_size, image_path):
+    img_small_size = calc_small_size(image, small_size)
     if get_orientation(image) == 'landscape':
-        small_size = tuple(reversed(small_size))
-    resize_image(image, small_size).save(image_path + '/small.jpg')
+        img_small_size = tuple(reversed(img_small_size))
+    resize_image(image, img_small_size).save(image_path + '/small.jpg')
 
     # Log status.
     print colors.green('Saved small copy to ' + image_path)
@@ -154,7 +165,7 @@ print_sizes = [
     (20, 30),       # 2:3
     (21, 28)        # 3:4
 ]
-small_size = (667, 1000)
+small_size = 1000
 photos_path = os.path.expanduser('~') + '/Dropbox/Photography/'
 photo_name_after = 'Photography'
 directories_to_print = ['_random', '_studio', 'location']
